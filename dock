@@ -1,0 +1,72 @@
+#!/usr/bin/env lua
+
+Docker = {}
+Docker.__index = Docker
+
+function Docker:create()
+    local dock = {}
+    setmetatable(dock, Docker)
+    return dock
+end
+
+function Docker:listContainer()
+    local handle = io.popen("docker ps -a -q")
+    local containers = handle:read("a*")
+    handle:close()
+    --print(containers)
+    --print("boulou")
+    containerArr = {}
+    count = 0
+    for x in string.gmatch(containers, "[^\r\n]+") do
+        containerArr[count] = x
+        count = count + 1
+    end
+    return containerArr
+end
+
+function Docker:stopContainer(container)
+    if type(container) == "string"
+    then 
+        os.execute('docker stop ' .. container)
+    else
+        for k, v in pairs(container) do
+            os.execute('docker stop ' .. v)
+        end
+    end
+end
+
+function Docker:rmContainer(container)
+    if type(container) == "string"
+    then
+        os.execute('docker rm ' .. container)
+    else
+        for k, v in pairs(container) do
+            os.execute('docker rm ' .. v)
+        end
+    end
+end
+
+function Docker:checkArg(argument)
+    if argument[1] == nil
+    then
+        print("You can pass parameter like this:\n- dock rm\n- dock stop\n- dock all")
+    else
+        local allContainers = self:listContainer(self)
+        if argument[1] == "stop"
+        then
+            self:stopContainer(self, allContainers)
+        elseif argument[1] == "rm"
+        then
+           self:rmContainer(self, allContainers)
+        elseif argument[1] == "all"
+        then
+            self:stopContainer(self, allContainers)
+            self:rmContainer(self, allContainers)
+        else
+            print("You can pass parameter like this\n- dock rm\n- dock stop - dock all")
+        end
+    end
+end
+
+local dock = Docker:create()
+dock:checkArg(arg)

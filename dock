@@ -28,12 +28,10 @@ function Docker:stopContainer(container)
     if type(container) == "string"
     then 
         os.execute('docker stop ' .. container)
-        print('container : ' .. container " stopped successfully")
     else
         for k, v in pairs(container) do
             os.execute('docker stop ' .. v)
         end
-        print("all containers stopped")
     end
 end
 
@@ -41,12 +39,10 @@ function Docker:rmContainer(container)
     if type(container) == "string"
     then
         os.execute('docker rm ' .. container)
-        print('container : ' .. container " removed successfully")
     else
         for k, v in pairs(container) do
             os.execute('docker rm ' .. v)
         end
-        print('all containers removed')
     end
 end
 
@@ -55,17 +51,17 @@ function Docker:checkArg(argument)
     then
         print("You can pass parameter like this:\n- dock rm\n- dock stop\n- dock all")
     else
-        allContainers = self:listContainer(self)
+        local allContainers = self:listContainer(self)
         if argument[1] == "stop"
         then
-            self:stopContainer(allContainers)
+            self:stopContainer(self, allContainers)
         elseif argument[1] == "rm"
         then
-           self:rmContainer(allContainers)
+           self:rmContainer(self, allContainers)
         elseif argument[1] == "all"
         then
-            self:stopContainer(allContainers)
-            self:rmContainer(allContainers)
+            self:stopContainer(self, allContainers)
+            self:rmContainer(self, allContainers)
         else
             print("You can pass parameter like this\n- dock rm\n- dock stop - dock all")
         end

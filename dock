@@ -13,8 +13,6 @@ function Docker:listContainer()
     local handle = io.popen("docker ps -a -q")
     local containers = handle:read("a*")
     handle:close()
-    --print(containers)
-    --print("boulou")
     containerArr = {}
     count = 0
     for x in string.gmatch(containers, "[^\r\n]+") do
@@ -29,8 +27,10 @@ function Docker:stopContainer(container)
     then 
         os.execute('docker stop ' .. container)
     else
+        print('stop containers : ')
         for k, v in pairs(container) do
             os.execute('docker stop ' .. v)
+            print(v)
         end
     end
 end
@@ -40,8 +40,10 @@ function Docker:rmContainer(container)
     then
         os.execute('docker rm ' .. container)
     else
+        print('rm containers : ')
         for k, v in pairs(container) do
             os.execute('docker rm ' .. v)
+            print(v)
         end
     end
 end
@@ -51,17 +53,17 @@ function Docker:checkArg(argument)
     then
         print("You can pass parameter like this:\n- dock rm\n- dock stop\n- dock all")
     else
-        local allContainers = self:listContainer(self)
+        local allContainers = self:listContainer()
         if argument[1] == "stop"
         then
-            self:stopContainer(self, allContainers)
+            self:stopContainer(allContainers)
         elseif argument[1] == "rm"
         then
-           self:rmContainer(self, allContainers)
+           self:rmContainer(allContainers)
         elseif argument[1] == "all"
         then
-            self:stopContainer(self, allContainers)
-            self:rmContainer(self, allContainers)
+            self:stopContainer(allContainers)
+            self:rmContainer(allContainers)
         else
             print("You can pass parameter like this\n- dock rm\n- dock stop - dock all")
         end
